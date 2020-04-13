@@ -266,9 +266,9 @@ const struct mcu_t {
 						AVR_IO_REGBIT(TCCR1B, WGM12), AVR_IO_REGBIT(TCCR1B, WGM13) },
 		.wgm_op = {
 			 [0] = AVR_TIMER_WGM_NORMAL16(),
-			 // TODO: 1 PWM phase correct 8bit
-			 //		 2 PWM phase correct 9bit
-			 //		 3 PWM phase correct 10bit
+ 			 [1] = AVR_TIMER_WGM_PWM8(),
+			 [2] = AVR_TIMER_WGM_PWM9(),
+			 [3] = AVR_TIMER_WGM_PWM10(),
 			 [4] = AVR_TIMER_WGM_CTC(),
 			 [5] = AVR_TIMER_WGM_FASTPWM8(),
 			 [6] = AVR_TIMER_WGM_FASTPWM9(),
@@ -342,7 +342,7 @@ const struct mcu_t {
 		.wgm = { AVR_IO_REGBIT(TCCR2A, WGM20), AVR_IO_REGBIT(TCCR2A, WGM21), AVR_IO_REGBIT(TCCR2B, WGM22) },
 		.wgm_op = {
 			 [0] = AVR_TIMER_WGM_NORMAL8(),
-			 // TODO 1 pwm phase correct 
+			 [1] = AVR_TIMER_WGM_PWM8(),
 			 [2] = AVR_TIMER_WGM_CTC(),
 			 [3] = AVR_TIMER_WGM_FASTPWM8(),
 			 [7] = AVR_TIMER_WGM_OCPWM(),
@@ -389,9 +389,9 @@ const struct mcu_t {
 						AVR_IO_REGBIT(TCCR3B, WGM32), AVR_IO_REGBIT(TCCR3B, WGM33) },
 		.wgm_op = {
 			 [0] = AVR_TIMER_WGM_NORMAL16(),
-			 // TODO: 1 PWM phase correct 8bit
-			 //		 2 PWM phase correct 9bit
-			 //		 3 PWM phase correct 10bit
+			 [1] = AVR_TIMER_WGM_PWM8(),
+			 [2] = AVR_TIMER_WGM_PWM9(),
+			 [3] = AVR_TIMER_WGM_PWM10(),
 			 [4] = AVR_TIMER_WGM_CTC(),
 			 [5] = AVR_TIMER_WGM_FASTPWM8(),
 			 [6] = AVR_TIMER_WGM_FASTPWM9(),
@@ -469,9 +469,9 @@ const struct mcu_t {
 						AVR_IO_REGBIT(TCCR4B, WGM42), AVR_IO_REGBIT(TCCR4B, WGM43) },
 		.wgm_op = {
 			 [0] = AVR_TIMER_WGM_NORMAL16(),
-			 // TODO: 1 PWM phase correct 8bit
-			 //		 2 PWM phase correct 9bit
-			 //		 3 PWM phase correct 10bit
+ 			 [1] = AVR_TIMER_WGM_PWM8(),
+			 [2] = AVR_TIMER_WGM_PWM9(),
+			 [3] = AVR_TIMER_WGM_PWM10(),
 			 [4] = AVR_TIMER_WGM_CTC(),
 			 [5] = AVR_TIMER_WGM_FASTPWM8(),
 			 [6] = AVR_TIMER_WGM_FASTPWM9(),
@@ -547,9 +547,9 @@ const struct mcu_t {
 						AVR_IO_REGBIT(TCCR5B, WGM52), AVR_IO_REGBIT(TCCR5B, WGM53) },
 		.wgm_op = {
 			 [0] = AVR_TIMER_WGM_NORMAL16(),
-			 // TODO: 1 PWM phase correct 8bit
-			 //		 2 PWM phase correct 9bit
-			 //		 3 PWM phase correct 10bit
+ 			 [1] = AVR_TIMER_WGM_PWM8(),
+			 [2] = AVR_TIMER_WGM_PWM9(),
+			 [3] = AVR_TIMER_WGM_PWM10(),
 			 [4] = AVR_TIMER_WGM_CTC(),
 			 [5] = AVR_TIMER_WGM_FASTPWM8(),
 			 [6] = AVR_TIMER_WGM_FASTPWM9(),

@@ -548,7 +548,6 @@ avr_timer_configure(
 			}
 		}
 	}
-
 }
 
 static void
@@ -632,6 +631,9 @@ avr_timer_write_ocr(
 					_timer_get_ocr(timer, AVR_TIMER_COMPA));
 			avr_raise_irq(timer->io.irq + TIMER_IRQ_OUT_PWM1,
 					_timer_get_ocr(timer, AVR_TIMER_COMPB));
+			if (sizeof(timer->comp)>2)
+				avr_raise_irq(timer->io.irq + TIMER_IRQ_OUT_PWM2,
+						_timer_get_ocr(timer, AVR_TIMER_COMPC));
 			break;
 		default:
 			AVR_LOG(avr, LOG_WARNING, "TIMER: %s-%c mode %d UNSUPPORTED\n",
@@ -851,6 +853,7 @@ avr_timer_reset(
 static const char * irq_names[TIMER_IRQ_COUNT] = {
 	[TIMER_IRQ_OUT_PWM0] = "8>pwm0",
 	[TIMER_IRQ_OUT_PWM1] = "8>pwm1",
+	[TIMER_IRQ_OUT_PWM2] = "8>pwm2",
 	[TIMER_IRQ_IN_ICP] = "<icp",
 	[TIMER_IRQ_OUT_COMP + 0] = ">compa",
 	[TIMER_IRQ_OUT_COMP + 1] = ">compb",
