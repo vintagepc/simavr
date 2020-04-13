@@ -1,0 +1,3 @@
+[submodule "examples/board_einsy"]
+	path = examples/board_einsy
+	url = https://github.com/vintagepc/MK3SIM.git
