@@ -39,7 +39,7 @@ static void avr_flash_write(avr_t * avr, avr_io_addr_t addr, uint8_t v, void * p
 
 	avr_core_watch_write(avr, addr, v);
 
-//	printf("** avr_flash_write %02x\n", v);
+	//printf("** avr_flash_write %02x\n", v);
 
 	if (avr_regbit_get(avr, p->selfprgen))
 		avr_cycle_timer_register(avr, 4, avr_progen_clear, p); // 4 cycles is very little!
@@ -79,8 +79,8 @@ static int avr_flash_ioctl(struct avr_io_t * port, uint32_t ctl, void * io_param
 			z &= ~(p->spm_pagesize - 1);
 			AVR_LOG(avr, LOG_TRACE, "FLASH: Writing page %04x (%d)\n", (z / p->spm_pagesize), p->spm_pagesize);
 			for (int i = 0; i < p->spm_pagesize / 2; i++) {
-				avr->flash[z++] = p->tmppage[i];
-				avr->flash[z++] = p->tmppage[i] >> 8;
+				avr->flash[z++] &= p->tmppage[i];
+				avr->flash[z++] &= p->tmppage[i] >> 8;
 			}
 			avr_flash_clear_temppage(p);
 		} else if (avr_regbit_get(avr, p->blbset)) {
