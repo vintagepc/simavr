@@ -342,7 +342,7 @@ const struct mcu_t {
 		.wgm = { AVR_IO_REGBIT(TCCR2A, WGM20), AVR_IO_REGBIT(TCCR2A, WGM21), AVR_IO_REGBIT(TCCR2B, WGM22) },
 		.wgm_op = {
 			 [0] = AVR_TIMER_WGM_NORMAL8(),
-			 [1] = AVR_TIMER_WGM_PWM8(),
+			 [1] = AVR_TIMER_WGM_FCPWM8(),
 			 [2] = AVR_TIMER_WGM_CTC(),
 			 [3] = AVR_TIMER_WGM_FASTPWM8(),
 			 [7] = AVR_TIMER_WGM_OCPWM(),
