@@ -111,6 +111,13 @@ typedef struct avr_ioport_t {
 	// If the mask is not set, no output value is sent
 	// on the output IRQ. If the mask is set, the specified
 	// value is sent.
+	
+	// This is silly, the input behaviour means you canot have an external
+	// device hold a pin low (or at any other value than ext_pullup). 
+	// I'm adding this here so that we don't clobber the input pin state every time
+	// something writes the IO port. Basically, set a pullup once, then don't touch it again.
+	// ~VintagePC
+	uint8_t initial_set;
 	struct {
 		uint8_t pull_mask, pull_value;
 	} external;

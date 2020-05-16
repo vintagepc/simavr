@@ -57,8 +57,12 @@ avr_ioport_update_irqs(
 			avr_raise_irq(p->io.irq + i, (avr->data[p->r_port] >> i) & 1);
 		else if (p->external.pull_mask & (1 << i))
 			avr_raise_irq(p->io.irq + i, (p->external.pull_value >> i) & 1);
-		else if ((avr->data[p->r_port] >> i) & 1)
+		else if (((avr->data[p->r_port] >> i) & 1) && ((p->initial_set >>i)&1) )
+		{
 			avr_raise_irq(p->io.irq + i, 1);
+			// Set the flag so we don't constantly clobber external input state - ~VintagePC
+			p->initial_set |= (1<<i);
+		}
 	}
 	uint8_t pin = (avr->data[p->r_pin] & ~ddr) | (avr->data[p->r_port] & ddr);
 	pin = (pin & ~p->external.pull_mask) | p->external.pull_value;
@@ -164,6 +168,7 @@ avr_ioport_reset(
 		avr_io_t * port)
 {
 	avr_ioport_t * p = (avr_ioport_t *)port;
+	p->initial_set = 0;
 	for (int i = 0; i < IOPORT_IRQ_PIN_ALL; i++)
 		avr_irq_register_notify(p->io.irq + i, avr_ioport_irq_notify, p);
 }
