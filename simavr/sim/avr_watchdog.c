@@ -47,7 +47,7 @@ static avr_cycle_count_t avr_watchdog_timer(
 
 		/* Ideally we would perform a reset here via 'avr_reset'
 		 * However, returning after reset would result in an unconsistent state.
-		 * It seems our best (and cleanest) solution is to set a temporary call 
+		 * It seems our best (and cleanest) solution is to set a temporary call
 		 * back which can safely perform the reset for us...  During reset,
 		 * the previous callback can be restored and safely resume.
 		 */
@@ -66,16 +66,17 @@ static avr_cycle_count_t avr_wdce_clear(
 }
 
 static void avr_watchdog_set_cycle_count_and_timer(
-	avr_t * avr, 
-	avr_watchdog_t * p, 
-	uint8_t was_enabled, 
+	avr_t * avr,
+	avr_watchdog_t * p,
+	uint8_t was_enabled,
 	int8_t old_wdp)
 {
 	// If nothing else, always ensure we have a valid cycle count...
 	uint8_t wdp = avr_regbit_get_array(avr, p->wdp, 4);
 
 	p->cycle_count = 2048 << wdp;
-	p->cycle_count = (p->cycle_count * avr->frequency) / 128000;
+	// Note the real watchdog is not as precise, it can be as much as 120% of the specified value...
+	p->cycle_count = (((p->cycle_count + (p->cycle_count/10)) * avr->frequency) / 128000);
 
 	uint8_t wde = avr_regbit_get(avr, p->wde);
 	uint8_t wdie = avr_regbit_get(avr, p->watchdog.enable);
@@ -83,7 +84,7 @@ static void avr_watchdog_set_cycle_count_and_timer(
 	uint8_t enable_changed = (was_enabled != (wde || wdie));
 
 	uint8_t wdp_changed = ((old_wdp >= 0) ? (wdp != old_wdp) : 0);
-	
+
 	if (!enable_changed && !wdp_changed)
 		return;
 
@@ -111,7 +112,7 @@ static void avr_watchdog_write(
 	uint8_t old_wde = avr_regbit_get(avr, p->wde);
 	uint8_t old_wdie = avr_regbit_get(avr, p->watchdog.enable);
 	uint8_t old_wdce = avr_regbit_get(avr, p->wdce);
-	
+
 	uint8_t was_enabled = (old_wde || old_wdie);
 
 	uint8_t old_v = avr->data[addr]; // allow gdb to see write...
@@ -126,11 +127,11 @@ static void avr_watchdog_write(
 
 		avr_watchdog_set_cycle_count_and_timer(avr, p, was_enabled, old_wdp);
 	} else {
-		/* easier to change only what we need rather than check and reset 
+		/* easier to change only what we need rather than check and reset
 		 * locked/read-only bits.
 		 */
 		avr->data[addr] = old_v;
-		
+
 		uint8_t wdce_v = avr_regbit_from_value(avr, p->wdce, v);
 		uint8_t wde_v = avr_regbit_from_value(avr, p->wde, v);
 
@@ -186,7 +187,7 @@ static void avr_watchdog_irq_notify(
 		avr_regbit_clear(avr, p->watchdog.enable);
 	}
 }
-		
+
 static void avr_watchdog_reset(avr_io_t * port)
 {
 	avr_watchdog_t * p = (avr_watchdog_t *)port;
@@ -203,7 +204,7 @@ static void avr_watchdog_reset(avr_io_t * port)
 		avr_regbit_set(avr, p->wde);
 		avr_regbit_set(avr, p->wdrf);
 		avr_regbit_set_array_from_value(avr, p->wdp, 4, 0);
-		
+
 		avr_watchdog_set_cycle_count_and_timer(avr, p, 0, 0);
 	}
 	/* TODO could now use the two pending/running IRQs to do the same
@@ -228,4 +229,3 @@ void avr_watchdog_init(avr_t * avr, avr_watchdog_t * p)
 
 	p->reset_context.wdrf = 0;
 }
-
