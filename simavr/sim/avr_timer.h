@@ -72,7 +72,7 @@ enum {
 	avr_timer_com_toggle,   // Toggle OCnx on compare match
 	avr_timer_com_clear,    // clear OCnx on compare match
 	avr_timer_com_set,      // set OCnx on compare match
-	
+
 };
 
 enum {
