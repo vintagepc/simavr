@@ -610,8 +610,15 @@ avr_timer_write_ocr(
 		case avr_timer_wgm_normal:
 			avr_timer_reconfigure(timer, 0);
 			break;
-		case avr_timer_wgm_fc_pwm:	// OCR is not used here
+		case avr_timer_wgm_fc_pwm:
 			avr_timer_reconfigure(timer, 0);
+					avr_raise_irq(timer->io.irq + TIMER_IRQ_OUT_PWM0,
+					_timer_get_ocr(timer, AVR_TIMER_COMPA));
+			avr_raise_irq(timer->io.irq + TIMER_IRQ_OUT_PWM1,
+					_timer_get_ocr(timer, AVR_TIMER_COMPB));
+			if (sizeof(timer->comp)>2)
+				avr_raise_irq(timer->io.irq + TIMER_IRQ_OUT_PWM2,
+						_timer_get_ocr(timer, AVR_TIMER_COMPC));
 			break;
 		case avr_timer_wgm_ctc:
 			avr_timer_reconfigure(timer, 0);
