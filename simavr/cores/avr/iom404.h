@@ -17,15 +17,15 @@
   POSSIBILITY OF SUCH DAMAGE. */
 
 
-#ifndef _AVR_IOM5120_H_
-#define _AVR_IOM5120_H_ 1
+#ifndef _AVR_IOM404_H_
+#define _AVR_IOM404_H_ 1
 
 #include <avr/iomxx0_1.h>
 
 /* Constants */
 #define SPM_PAGESIZE    256
 #define RAMSTART        0x200
-#define RAMEND          0x21FF
+#define RAMEND          0xFFFF
 #define XRAMEND         0xFFFF
 #define E2END           0xFFF
 #define E2PAGESIZE      8

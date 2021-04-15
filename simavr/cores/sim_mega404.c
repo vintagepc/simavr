@@ -1,5 +1,5 @@
 /*
-   sim_mega5120.c
+   sim_mega404.c
 
    Copyright 2008, 2009 Michel Pollet <buserror@gmail.com>
    Copyright 2013 Yann GOUY <yann_gouy@yahoo.fr>
@@ -21,19 +21,19 @@
  */
 
 #include "sim_avr.h"
-#include "sim_mega5120.h"
+#include "sim_mega404.h"
 
 static avr_t * make()
 {
-	return avr_core_allocate(&mcu_mega5120.core, sizeof(struct mcu_t));
+	return avr_core_allocate(&mcu_mega404.core, sizeof(struct mcu_t));
 }
 
-avr_kind_t mega5120 = {
-		 .names = { "atmega5120" },
+avr_kind_t mega404 = {
+		 .names = { "atmega404" },
 		 .make = make
 };
 
-void m5120_init(struct avr_t * avr)
+void m404_init(struct avr_t * avr)
 {
 	struct mcu_t * mcu = (struct mcu_t*)avr;
 
@@ -68,7 +68,7 @@ void m5120_init(struct avr_t * avr)
 	avr_twi_init(avr, &mcu->twi);
 }
 
-void m5120_reset(struct avr_t * avr)
+void m404_reset(struct avr_t * avr)
 {
 // struct mcu_t * mcu = (struct mcu_t*)avr;
 }

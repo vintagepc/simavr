@@ -1,8 +1,8 @@
 /*
-   sim_mega5120.h
+   sim_mega404.h
 
    Based off sim_mega2560.h. NOT a real chip, this is a fake 2560
-   which has more flash memory for loading debug builds.
+   which has more flash/real memory for loading debug builds.
 
    This file is part of simavr.
 
@@ -33,20 +33,20 @@
 #include "avr_twi.h"
 #include "avr_acomp.h"
 
-void m5120_init(struct avr_t * avr);
-void m5120_reset(struct avr_t * avr);
+void m404_init(struct avr_t * avr);
+void m404_reset(struct avr_t * avr);
 
 #define _AVR_IO_H_
 #define __ASSEMBLER__
-#ifndef __AVR_ATmega2560__
-#define __AVR_ATmega2560__
+#ifndef __AVR_ATmega404__
+#define __AVR_ATmega404__
 #endif
-#include "avr/iom5120.h"
+#include "avr/iom404.h"
 
 #include "sim_core_declare.h"
 
 /*
- * This is a template for all of the 2560 devices, hopefully
+ * This is a template for all of the 404 devices, hopefully
  */
 const struct mcu_t {
 	avr_t			core;
@@ -62,13 +62,13 @@ const struct mcu_t {
 	avr_timer_t		timer0,timer1,timer2,timer3,timer4,timer5;
 	avr_spi_t		spi;
 	avr_twi_t		twi;
- } mcu_mega5120 = {
+ } mcu_mega404 = {
 	.core = {
-		.mmcu = "atmega5120",
+		.mmcu = "atmega404",
 		DEFAULT_CORE(4),
 
-		.init = m5120_init,
-		.reset = m5120_reset,
+		.init = m404_init,
+		.reset = m404_reset,
 
 		.rampz = RAMPZ, // extended program memory access
 		.eind = EIND,	// extended index register
@@ -380,7 +380,7 @@ const struct mcu_t {
 					.vector = TIMER2_COMPA_vect,
 				},
 			 },
-				// TIMER2_COMPB is only appeared in 2560
+				// TIMER2_COMPB is only appeared in 404
 			 [AVR_TIMER_COMPB] = {
 			 	.r_ocr = OCR2B,
 			 	.com = AVR_IO_REGBITS(TCCR2A, COM2B0, 0x3),
