@@ -85,6 +85,9 @@ FILE (WRITE ${PROJECT_BINARY_DIR}/sim_core_decl.h
 
 add_library(${LIBRARY_NAME} STATIC ${simavr_sources})
 
+find_package(LibElf REQUIRED)
+target_include_directories(simavr PRIVATE ${LIBELF_INCLUDE_DIRS})
+
 target_include_directories(simavr PRIVATE
 	"${PROJECT_SOURCE_DIR}/simavr/cores/"
 	"${PROJECT_SOURCE_DIR}/simavr/cores/avr/"
