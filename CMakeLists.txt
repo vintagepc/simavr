@@ -86,7 +86,7 @@ FILE (WRITE ${PROJECT_BINARY_DIR}/sim_core_decl.h
 add_library(${LIBRARY_NAME} STATIC ${simavr_sources})
 
 find_package(LibElf REQUIRED)
-target_include_directories(simavr PRIVATE ${LIBELF_INCLUDE_DIRS})
+include_directories(${LIBELF_INCLUDE_DIRS})
 
 target_include_directories(simavr PRIVATE
 	"${PROJECT_SOURCE_DIR}/simavr/cores/"
@@ -95,6 +95,12 @@ target_include_directories(simavr PRIVATE
 	"${PROJECT_SOURCE_DIR}/simavr/sim/avr/"
 	"${PROJECT_BINARY_DIR}/"
 )
+
+if (APPLE)
+	target_include_directories(simavr PRIVATE
+		"/usr/local/include/"
+	)
+endif()
 
 set_target_properties(${LIBRARY_NAME} PROPERTIES VERSION 1.6.0)
 
