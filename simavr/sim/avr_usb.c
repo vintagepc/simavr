@@ -148,12 +148,12 @@ struct _epstate {
 };
 
 struct usb_internal_state {
-	struct _epstate ep_state[5];
+	struct _epstate ep_state[7];
 	avr_int_vector_t com_vect;
 	avr_int_vector_t gen_vect;
 };
 
-const uint8_t num_endpoints = 5;//sizeof (struct usb_internal_state.ep_state) / sizeof (struct usb_internal_state.ep_state[0]);
+const uint8_t num_endpoints = 7;//sizeof (struct usb_internal_state.ep_state) / sizeof (struct usb_internal_state.ep_state[0]);
 
 static uint8_t
 current_ep_to_cpu(
