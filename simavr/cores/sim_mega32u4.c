@@ -417,8 +417,8 @@ const struct mcu_t {
 	.timer4 = {
 		.name = '4',
 		.disabled = AVR_IO_REGBIT(PRR1, PRTIM3),
-		.wgm = {AVR_IO_REGBIT(TCCR3A, WGM30), AVR_IO_REGBIT(TCCR3A, WGM31),
-					AVR_IO_REGBIT(TCCR3B, WGM32), AVR_IO_REGBIT(TCCR3B, WGM33) },
+		.wgm = {AVR_IO_REGBIT(TCCR4D, WGM40), AVR_IO_REGBIT(TCCR4D, WGM41),
+				},
 		.wgm_op = {
 			[0] = AVR_TIMER_WGM_NORMAL10(),
 			[1] = AVR_TIMER_WGM_FCPWM10(),
@@ -456,7 +456,7 @@ const struct mcu_t {
 				}
 			},
 			[AVR_TIMER_COMPC] = {
-				// .r_ocr = OCR4C,
+				.r_ocr = OCR4C,
 				// .com = AVR_IO_REGBITS(TCCR4A, COM40, 0x3),
 				// .com_pin = AVR_IO_REGBIT(PORTC, 6),	// WTF nothing in doc about this
 				// .interrupt = {
