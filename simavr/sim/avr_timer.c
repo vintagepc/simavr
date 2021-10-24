@@ -161,6 +161,15 @@ avr_timer_compc(
 	return avr_timer_comp((avr_timer_t*)param, when, AVR_TIMER_COMPC);
 }
 
+static avr_cycle_count_t
+avr_timer_compd(
+		struct avr_t * avr,
+		avr_cycle_count_t when,
+		void * param)
+{
+	return avr_timer_comp((avr_timer_t*)param, when, AVR_TIMER_COMPD);
+}
+
 static void
 avr_timer_irq_ext_clock(
 		struct avr_irq_t * irq,
@@ -189,7 +198,7 @@ avr_timer_irq_ext_clock(
 	p->ext_clock_flags |= AVR_TIMER_EXTCLK_FLAG_STARTED;
 
 	static const avr_cycle_timer_t dispatch[AVR_TIMER_COMP_COUNT] =
-		{ avr_timer_compa, avr_timer_compb, avr_timer_compc };
+		{ avr_timer_compa, avr_timer_compb, avr_timer_compc, avr_timer_compd };
 
 	int overflow = 0;
 	/**
@@ -303,7 +312,7 @@ avr_timer_tov(
 	p->tov_base = when;
 
 	static const avr_cycle_timer_t dispatch[AVR_TIMER_COMP_COUNT] =
-		{ avr_timer_compa, avr_timer_compb, avr_timer_compc };
+		{ avr_timer_compa, avr_timer_compb, avr_timer_compc, avr_timer_compd };
 
 	for (int compi = 0; compi < AVR_TIMER_COMP_COUNT; compi++) {
 		if (p->comp[compi].comp_cycles) {
@@ -376,6 +385,7 @@ avr_timer_cancel_all_cycle_timers(
 	avr_cycle_timer_cancel(avr, avr_timer_compa, timer);
 	avr_cycle_timer_cancel(avr, avr_timer_compb, timer);
 	avr_cycle_timer_cancel(avr, avr_timer_compc, timer);
+	avr_cycle_timer_cancel(avr, avr_timer_compd, timer);
 }
 
 static void
@@ -592,6 +602,21 @@ avr_timer_reconfigure(
 }
 
 static void
+avr_timer_raise_pwm_irq(
+	avr_irq_t* irq,
+	uint32_t value)
+{
+	// Note: this is DIFFERENT from timers that have PWM inversion bits.
+	// That isn't handled; rather, this is a method to invert the PWM
+	// value if your circuitry is inverting the waveform voltage levels.
+	if (irq->flags & IRQ_FLAG_PWM_INV)
+	{
+		value = 255U - value;
+	}
+	avr_raise_irq(irq,value);
+}
+
+static void
 avr_timer_write_ocr(
 		struct avr_t * avr,
 		avr_io_addr_t addr,
@@ -612,37 +637,40 @@ avr_timer_write_ocr(
 			break;
 		case avr_timer_wgm_fc_pwm:
 			avr_timer_reconfigure(timer, 0);
-					avr_raise_irq(timer->io.irq + TIMER_IRQ_OUT_PWM0,
+					avr_timer_raise_pwm_irq(timer->io.irq + TIMER_IRQ_OUT_PWM0,
 					_timer_get_ocr(timer, AVR_TIMER_COMPA));
-			avr_raise_irq(timer->io.irq + TIMER_IRQ_OUT_PWM1,
+			avr_timer_raise_pwm_irq(timer->io.irq + TIMER_IRQ_OUT_PWM1,
 					_timer_get_ocr(timer, AVR_TIMER_COMPB));
-			if (sizeof(timer->comp)>2)
-				avr_raise_irq(timer->io.irq + TIMER_IRQ_OUT_PWM2,
-						_timer_get_ocr(timer, AVR_TIMER_COMPC));
+			avr_timer_raise_pwm_irq(timer->io.irq + TIMER_IRQ_OUT_PWM2,
+					_timer_get_ocr(timer, AVR_TIMER_COMPC));
+			avr_timer_raise_pwm_irq(timer->io.irq + TIMER_IRQ_OUT_PWM3,
+					_timer_get_ocr(timer, AVR_TIMER_COMPD));
 			break;
 		case avr_timer_wgm_ctc:
 			avr_timer_reconfigure(timer, 0);
 			break;
 		case avr_timer_wgm_pwm:
 			if (timer->mode.top != avr_timer_wgm_reg_ocra) {
-				avr_raise_irq(timer->io.irq + TIMER_IRQ_OUT_PWM0, _timer_get_ocr(timer, AVR_TIMER_COMPA));
+				avr_timer_raise_pwm_irq(timer->io.irq + TIMER_IRQ_OUT_PWM0, _timer_get_ocr(timer, AVR_TIMER_COMPA));
 			} else {
 				avr_timer_reconfigure(timer, 0); // if OCRA is the top, reconfigure needed
 			}
-			avr_raise_irq(timer->io.irq + TIMER_IRQ_OUT_PWM1, _timer_get_ocr(timer, AVR_TIMER_COMPB));
-			if (sizeof(timer->comp)>2)
-				avr_raise_irq(timer->io.irq + TIMER_IRQ_OUT_PWM2, _timer_get_ocr(timer, AVR_TIMER_COMPC));
+			avr_timer_raise_pwm_irq(timer->io.irq + TIMER_IRQ_OUT_PWM1, _timer_get_ocr(timer, AVR_TIMER_COMPB));
+			avr_timer_raise_pwm_irq(timer->io.irq + TIMER_IRQ_OUT_PWM2, _timer_get_ocr(timer, AVR_TIMER_COMPC));
+			avr_timer_raise_pwm_irq(timer->io.irq + TIMER_IRQ_OUT_PWM3, _timer_get_ocr(timer, AVR_TIMER_COMPD));
+
 			break;
 		case avr_timer_wgm_fast_pwm:
 			if (oldv != _timer_get_comp_ocr(avr, comp))
 				avr_timer_reconfigure(timer, 0);
-			avr_raise_irq(timer->io.irq + TIMER_IRQ_OUT_PWM0,
+			avr_timer_raise_pwm_irq(timer->io.irq + TIMER_IRQ_OUT_PWM0,
 					_timer_get_ocr(timer, AVR_TIMER_COMPA));
-			avr_raise_irq(timer->io.irq + TIMER_IRQ_OUT_PWM1,
+			avr_timer_raise_pwm_irq(timer->io.irq + TIMER_IRQ_OUT_PWM1,
 					_timer_get_ocr(timer, AVR_TIMER_COMPB));
-			if (sizeof(timer->comp)>2)
-				avr_raise_irq(timer->io.irq + TIMER_IRQ_OUT_PWM2,
-						_timer_get_ocr(timer, AVR_TIMER_COMPC));
+			avr_timer_raise_pwm_irq(timer->io.irq + TIMER_IRQ_OUT_PWM2,
+					_timer_get_ocr(timer, AVR_TIMER_COMPC));
+			avr_timer_raise_pwm_irq(timer->io.irq + TIMER_IRQ_OUT_PWM3,
+					_timer_get_ocr(timer, AVR_TIMER_COMPD));
 			break;
 		default:
 			AVR_LOG(avr, LOG_WARNING, "TIMER: %s-%c mode %d UNSUPPORTED\n",
@@ -866,10 +894,12 @@ static const char * irq_names[TIMER_IRQ_COUNT] = {
 	[TIMER_IRQ_OUT_PWM0] = "8>pwm0",
 	[TIMER_IRQ_OUT_PWM1] = "8>pwm1",
 	[TIMER_IRQ_OUT_PWM2] = "8>pwm2",
+	[TIMER_IRQ_OUT_PWM3] = "8>pwm3",
 	[TIMER_IRQ_IN_ICP] = "<icp",
 	[TIMER_IRQ_OUT_COMP + 0] = ">compa",
 	[TIMER_IRQ_OUT_COMP + 1] = ">compb",
 	[TIMER_IRQ_OUT_COMP + 2] = ">compc",
+	[TIMER_IRQ_OUT_COMP + 3] = ">compd",
 };
 
 static	avr_io_t	_io = {
@@ -899,6 +929,7 @@ avr_timer_init(
 	p->io.irq[TIMER_IRQ_OUT_PWM0].flags |= IRQ_FLAG_FILTERED;
 	p->io.irq[TIMER_IRQ_OUT_PWM1].flags |= IRQ_FLAG_FILTERED;
 	p->io.irq[TIMER_IRQ_OUT_PWM2].flags |= IRQ_FLAG_FILTERED;
+	p->io.irq[TIMER_IRQ_OUT_PWM3].flags |= IRQ_FLAG_FILTERED;
 
 	if (p->wgm[0].reg) // these are not present on older AVRs
 		avr_register_io_write(avr, p->wgm[0].reg, avr_timer_write, p);
