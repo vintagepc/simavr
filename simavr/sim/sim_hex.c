@@ -103,7 +103,7 @@ read_ihex_chunks(
 
 	while (!feof(f)) {
 		char line[128];
-		if (!fgets(line, sizeof(line)-1, f))
+		if (!fgets(line, sizeof(line)-1, f) || line[0] == ';' || line[0]=='\r' || line[0] == '\n')
 			continue;
 		if (line[0] != ':') {
 			fprintf(stderr, "AVR: '%s' invalid ihex format (%.4s)\n", fname, line);
