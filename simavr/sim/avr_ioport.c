@@ -182,7 +182,10 @@ avr_ioport_reset(
 	avr_ioport_t * p = (avr_ioport_t *)port;
 	p->initial_set = 0;
 	for (int i = 0; i < IOPORT_IRQ_PIN_ALL; i++)
+	{
+		(p->io.irq + i)->flags |= IRQ_FLAG_INIT;
 		avr_irq_register_notify(p->io.irq + i, avr_ioport_irq_notify, p);
+	}
 	// force initial pu/pd state
 	avr_ioport_update_irqs(p);
 }
