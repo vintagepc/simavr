@@ -51,6 +51,7 @@ typedef struct avr_int_vector_t {
 					trace : 1,		// only for debug of a vector
 					raise_sticky : 1;	// 1 if the interrupt flag (= the raised regbit) is not cleared
 										// by the hardware when executing the interrupt routine (see TWINT)
+	uint8_t			fuzz; // Cycle count for fuzzing. Interrupt fired when it hits 2.
 } avr_int_vector_t, *avr_int_vector_p;
 
 // Size needs to be >= max number of vectors, and a power of two

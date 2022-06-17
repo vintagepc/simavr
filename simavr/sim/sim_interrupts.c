@@ -141,7 +141,10 @@ avr_raise_interrupt(
 	if (avr_regbit_get(avr, vector->enable)) {
 		// Mark the interrupt as pending
 		vector->pending = 1;
-
+		if (vector->fuzz==0)
+		{
+			vector->fuzz = rand()%3;
+		}
 		avr_int_table_p table = &avr->interrupts;
 
 		avr_int_pending_write(&table->pending, vector);
@@ -261,7 +264,15 @@ avr_service_interrupts(
 		}
 	}
 	avr_int_vector_t * vector = avr_int_pending_read_at(&table->pending, mini);
-
+	if (vector->fuzz <2)
+	{
+		vector->fuzz++;
+		return;
+	}
+	else
+	{
+		vector->fuzz=0;
+	}
 	// now move the one at the front of the fifo in the slot of
 	// the one we service
 	table->pending.buffer[(table->pending.read + mini) % avr_int_pending_fifo_size] =
