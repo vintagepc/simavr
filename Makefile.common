@@ -66,7 +66,7 @@ ifeq (${shell uname}, Darwin)
   # That's for Homebrew libelf and avr-gcc support
   HOMEBREW_PREFIX ?= /usr/local
   ifeq (${shell test -d $(HOMEBREW_PREFIX)/Cellar && echo Exists}, Exists)
-   ifeq (, $(shell which avr-gcc))
+   ifneq (${shell test -d $(HOMEBREW_PREFIX)/Cellar/avr-gcc* && echo Exists}, Exists)
     $(error Please install avr-gcc: brew tap osx-cross/homebrew-avr ; brew install avr-libc)
    endif
    ifneq (${shell test -d $(HOMEBREW_PREFIX)/Cellar/libelf/ && echo Exists}, Exists)
@@ -156,8 +156,10 @@ endif
 
 # --mcall-prologues can be used here, but messes up debugging a little
 %.axf: %.c
+ifneq ($(E),)
 	@echo AVR-CC ${<}
-	@part=${<} ; part=$${part/_*}; \
+endif
+	${E}part=${<} ; part=$${part/_*}; \
 	${AVR}gcc -Wall -gdwarf-2 -Os -std=gnu99 \
 			-mmcu=$$part \
 			-DF_CPU=8000000 \
@@ -213,7 +215,7 @@ endif
 		-Wl,--whole-archive,-soname,${basename ${notdir $@}}.1 \
 		${filter %.o %.a,$^} \
 		 -Wl,--no-whole-archive \
-		${filter-out -l%, $(LDFLAGS)} ${EXTRA_LDFLAGS}
+		${filter-out -lsimavr, $(LDFLAGS)} ${EXTRA_LDFLAGS}
 
 ${OBJ}/%.so: ${OBJ}/%.so.1
 	ln -sf ${notdir $<} $@

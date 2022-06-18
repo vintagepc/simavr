@@ -135,7 +135,7 @@ avr_raise_interrupt(
 	}
 
 	avr_raise_irq(vector->irq + AVR_INT_IRQ_PENDING, 1);
-	avr_raise_irq(avr->interrupts.irq + AVR_INT_IRQ_PENDING, 1);
+	avr_raise_irq(avr->interrupts.irq + AVR_INT_IRQ_PENDING, vector->vector);
 
 	// If the interrupt is enabled, attempt to wake the core
 	if (avr_regbit_get(avr, vector->enable)) {
@@ -175,7 +175,7 @@ avr_clear_interrupt(
 			avr_has_pending_interrupts(avr) ?
 					avr_int_pending_read_at(
 							&avr->interrupts.pending, 0)->vector : 0,
-							!avr_has_pending_interrupts(avr));
+							avr_has_pending_interrupts(avr));
 
 	if (vector->raised.reg && !vector->raise_sticky)
 		avr_regbit_clear(avr, vector->raised);
@@ -211,7 +211,7 @@ avr_get_interrupt_irq(
 	return NULL;
 }
 
-/* this is called uppon RETI. */
+/* this is called upon RETI. */
 void
 avr_interrupt_reti(
 		struct avr_t * avr)
@@ -224,8 +224,6 @@ avr_interrupt_reti(
 	avr_raise_irq(table->irq + AVR_INT_IRQ_RUNNING,
 			table->running_ptr > 0 ?
 					table->running[table->running_ptr-1]->vector : 0);
-	avr_raise_irq(avr->interrupts.irq + AVR_INT_IRQ_PENDING,
-			avr_has_pending_interrupts(avr));
 }
 
 /*
@@ -262,12 +260,16 @@ avr_service_interrupts(
 	}
 	avr_int_vector_t * vector = avr_int_pending_read_at(&table->pending, mini);
 
-	// now move the one at the front of the fifo in the slot of
-	// the one we service
-	table->pending.buffer[(table->pending.read + mini) % avr_int_pending_fifo_size] =
-			avr_int_pending_read(&table->pending);
-	avr_raise_irq(avr->interrupts.irq + AVR_INT_IRQ_PENDING,
-			avr_has_pending_interrupts(avr));
+	// it's possible that the vector being serviced is not at the front of the fifo, because we process interrupts based
+	// on vector priority rather than position in the fifo. if this is the case, we need to manually swap the vector
+	// being serviced with the vector at the front of the fifo so that the vector at the front of the fifo can be
+	// serviced in a following iteration.
+	avr_int_vector_p fifo_front = avr_int_pending_read(&table->pending);
+	if (fifo_front->vector != vector->vector) {
+		// the read into fifo_front above has incremented pending.read, so now mini points 1 beyond the desired
+		// destination for the swap.
+		table->pending.buffer[(table->pending.read + mini - 1) % avr_int_pending_fifo_size] = fifo_front;
+	}
 
 	// if that single interrupt is masked, ignore it and continue
 	// could also have been disabled, or cleared

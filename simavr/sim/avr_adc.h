@@ -54,7 +54,7 @@ enum {
 };
 
 // Get the internal IRQ corresponding to the INT
-#define AVR_IOCTL_ADC_GETIRQ AVR_IOCTL_DEF('a','d','c',' ')
+#define AVR_IOCTL_ADC_GETIRQ AVR_IOCTL_DEF('a','d','c','0')
 
 /*
  * Definition of a ADC mux mode.
@@ -108,7 +108,7 @@ typedef struct avr_adc_t {
 	// if the last bit exists in the mux, we are an extended ADC
 	avr_regbit_t	mux[6];
 	avr_regbit_t	ref[3];		// reference voltages bits
-	uint16_t		ref_values[7]; // ADC_VREF_*
+	uint16_t	ref_values[8];  // ADC_VREF_*
 
 	avr_regbit_t 	adlar;		// left/right adjustment bit
 
@@ -131,14 +131,31 @@ typedef struct avr_adc_t {
 	// use ADIF and ADIE bits
 	avr_int_vector_t adc;
 
-	/*
+	avr_adc_mux_t	muxmode[64];    // maximum 6 bits of mux modes
+
+        /*
 	 * runtime bits
 	 */
-	avr_adc_mux_t	muxmode[64];// maximum 6 bits of mux modes
+
 	uint16_t		adc_values[16];	// current values on the ADCs
 	uint16_t		temp;		// temp sensor reading
 	uint8_t			first;
 	uint8_t			read_status;	// marked one when adcl is read
+
+        /* Conversion parameters saved at start (ADSC is set). */
+
+        uint8_t                 current_muxi;
+        uint8_t                 current_refi;
+        uint8_t                 current_prescale;
+        struct {
+                unsigned int bipolar : 1;      // BIN bit.
+                unsigned int negate : 1;       // IPR bit.
+                unsigned int adjust : 1;       // ADLAR bit.
+        }                       current_extras;
+
+        /* Buffered conversion result. */
+
+        uint16_t                result;
 } avr_adc_t;
 
 void avr_adc_init(avr_t * avr, avr_adc_t * port);
