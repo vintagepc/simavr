@@ -179,7 +179,7 @@ avr_timer_compd(
 		avr_cycle_count_t when,
 		void * param)
 {
-	return avr_timer_comp((avr_timer_t*)param, when, AVR_TIMER_COMPD);
+	return avr_timer_comp((avr_timer_t*)param, when, AVR_TIMER_COMPD, 1);
 }
 
 static void
