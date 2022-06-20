@@ -18,13 +18,13 @@ file(GLOB SIMAVR_SIM_H ${PROJECT_SOURCE_DIR}/simavr/sim/*.h)
 
 
 set(simavr_sources
-	${SIMAVR_CORES_C}
 	${SIMAVR_SIM_C}
   )
 
 # Not sure why these don't generate yet, we don't need them anyway.
 set(SKIP_CORES
 	"mega169"
+	"mega328pb"
 	"megax"
 	"megax4"
 	"megax8"
@@ -33,15 +33,23 @@ set(SKIP_CORES
 	"tinyx5"
 )
 
+set(SKIP_SOURCES
+	"mega328pb"
+)
+
 # Helpers to generate the required headers:
 foreach (CORE IN LISTS SIMAVR_CORES_C)
 	get_filename_component(CORE_BASE ${CORE} NAME_WE)
 	STRING(REGEX REPLACE "^sim_" "" CORE_FILE "${CORE_BASE}")
 	STRING(TOUPPER "${CORE_FILE}" CORE_NAME)
+	if (NOT "${CORE_FILE}" IN_LIST SKIP_SOURCES)
+		list(APPEND simavr_sources "${CORE}")
+	endif()
 	if (ENABLED_CORES AND NOT "${CORE_FILE}" IN_LIST ENABLED_CORES)
 		continue()
 	endif()
 	if ("${CORE_FILE}" IN_LIST SKIP_CORES)
+		message(STATUS "skipped core ${CORE_FILE}")
 		continue()
 	endif()
 	list(APPEND SIMAVR_ENABLED_CORES "${CORE_FILE}")
