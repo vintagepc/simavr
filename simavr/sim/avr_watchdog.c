@@ -76,7 +76,7 @@ static void avr_watchdog_set_cycle_count_and_timer(
 
 	p->cycle_count = 2048 << wdp;
 	// Note the real watchdog is not as precise, it can be as much as 120% of the specified value...
-	p->cycle_count = (((p->cycle_count + (p->cycle_count/10)) * avr->frequency) / 128000);
+	p->cycle_count = (((p->cycle_count) * avr->frequency) / 128000);
 
 	uint8_t wde = avr_regbit_get(avr, p->wde);
 	uint8_t wdie = avr_regbit_get(avr, p->watchdog.enable);
@@ -162,8 +162,13 @@ static int avr_watchdog_ioctl(
 	if (ctl == AVR_IOCTL_WATCHDOG_RESET) {
 		if (avr_regbit_get(p->io.avr, p->wde) ||
 				avr_regbit_get(p->io.avr, p->watchdog.enable))
+		{
+			avr_cycle_count_t cnt = avr_cycle_timer_status(p->io.avr, avr_watchdog_timer, p);
+			uint32_t ms =  1000L * cnt / p->io.avr->frequency;
+			if (ms < 500) printf("WDR with %u ms left\n",ms);
 			avr_cycle_timer_register(p->io.avr, p->cycle_count,
 					avr_watchdog_timer, p);
+		}
 		res = 0;
 	}
 
