@@ -1,7 +1,7 @@
 simavr - a lean and mean Atmel AVR simulator for linux
 ======
 
-_simavr_ is a new AVR simulator for linux, or any platform that uses avr-gcc. It uses 
+_simavr_ is an AVR simulator for linux, or any platform that uses avr-gcc. It uses 
 avr-gcc's own register definition to simplify creating new targets for supported AVR
 devices. The core was made to be small and compact, and hackable so allow quick 
 prototyping of an AVR project. The AVR core is now stable for use with parts 
@@ -37,6 +37,7 @@ Supported IOs
 * External _Interrupts_, INT0 and so on.
 * _ADC_
 * Self-programming (ie bootloaders!)
+* A lot more!
 
 Emulated Cores (very easy to add new ones!)
 --------------
@@ -56,21 +57,23 @@ Emulated Cores (very easy to add new ones!)
 + ATTIny44/84
 + ATTiny2313/2313v
 + ATTiny13/13a
++ Many more!
 
 Extras:
 -------
 * fully working _gdb_ support including some pretty cool “passive modes”.
 * There is also very easy support for “VCD” (Value Change Dump) that can be visualized 
 graphically as “waveforms” with tools like _gtkwave_ (see below).
+* You can even source your own VCD files (for example from your logic analyzer) and feed them into your simulation.
 * There are a few examples of real life firmwares running on simavr, including OpenGL rendering of the display…
 * There is support for _Arduino_, but no IDE integration
 
 Documentation And Further Information
 -------------------------------------
 
-* Manual / Developer Guide: https://github.com/buserror-uk/simavr/blob/master/doc/manual/manual.pdf?raw=true
-* Examples: https://github.com/buserror-uk/simavr/tree/master/examples
-* Mailing List: http://groups.google.com/group/simavr
+* [Manual / Developer Guide](doc/manual/manual.pdf?raw=true)
+* [Examples](examples)
+* [Mailing List](https://groups.google.com/g/simavr)
 * IRC: _#simavr_ on Freenode
 
 Contributing
@@ -114,7 +117,7 @@ a file that will display:
 	simavr: sleeping with interrupts off, quitting gracefully
 
 And when the file is loaded in gtkwave, you see:
-![gtkwave](https://github.com/buserror-uk/simavr/raw/master/doc/img/gtkwave1.png)
+![gtkwave](doc/img/gtkwave1.png)
 
 You get a very precise timing breakdown of any change that you add to the trace, down
 to the AVR cycle. 
@@ -137,15 +140,15 @@ need to generate the proper stimulus so that the AVR is fooled.
 HD44780 LCD Board Demo
 ----------------------
 
-![lcd](https://github.com/buserror-uk/simavr/raw/master/doc/img/hd44780.png)
+![lcd](doc/img/hd44780.png)
 
 This example board hooks up an Atmega48 to an emulated HD44780 LCD and display a running
 counter in the 'lcd'. Everything is emulated, the firmware runs exactly like this
 on a real hardware.
 
-![lcd-gtkwave](https://github.com/buserror-uk/simavr/raw/master/doc/img/hd44780-wave.png)
+![lcd-gtkwave](doc/img/hd44780-wave.png)
 
 And this is a gtkwave trace of what the firmware is doing. You can zoom in, measure, etc
-in gtkwave, select trades to see etc.
+in gtkwave, select traces to see etc.
 
 Quite a few other examples are available!

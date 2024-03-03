@@ -347,7 +347,7 @@ avr_usb_ep_read(
 {
 	avr_usb_t * p = (avr_usb_t *) param;
 	uint8_t laddr = addr - p->r_usbcon;
-	uint8_t v;
+	uint8_t v = 0;
 	struct _epstate * epstate = get_epstate(p, current_ep_to_cpu(p));
 
 	if (pthread_mutex_lock(&p->state->mutex))

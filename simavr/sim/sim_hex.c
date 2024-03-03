@@ -219,7 +219,7 @@ sim_setup_firmware(const char * filename, uint32_t loadBase,
 		printf("Loaded %d section(s) of ihex\n", cnt);
 
 		for (int ci = 0; ci < cnt; ci++) {
-			if (chunk[ci].baseaddr < (1*1024*1024)) {
+			if (chunk[ci].baseaddr+loadBase < (1*1024*1024)) {
 				if (fp->flash) {
 					printf("Ignoring chunk %d, "
 						   "possible flash redefinition %08x, %d\n",
@@ -251,6 +251,8 @@ sim_setup_firmware(const char * filename, uint32_t loadBase,
 				}
 				fp->eeprom = chunk[ci].data;
 				fp->eesize = chunk[ci].size;
+				fp->eeprombase = chunk[ci].baseaddr + loadBase -
+							AVR_SEGMENT_OFFSET_EEPROM;
 				printf("Load HEX eeprom %08x, %d\n",
 					   chunk[ci].baseaddr, fp->eesize);
 			}
