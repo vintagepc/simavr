@@ -26,6 +26,7 @@ set(SKIP_CORES
 	"mega169"
 	"mega328pb"
 	"megax"
+	"mega324"
 	"megax4"
 	"megax8"
 	"megaxm1"
@@ -35,6 +36,7 @@ set(SKIP_CORES
 
 set(SKIP_SOURCES
 	"mega328pb"
+	"mega324"
 )
 
 # Helpers to generate the required headers:
