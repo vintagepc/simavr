@@ -104,6 +104,10 @@ target_include_directories(simavr PRIVATE
 	"${PROJECT_BINARY_DIR}/"
 )
 
+target_compile_definitions(simavr PRIVATE
+	"HAVE_LIBELF=1"
+)
+
 if (APPLE)
 	target_include_directories(simavr PRIVATE
 		"/usr/local/include/"
