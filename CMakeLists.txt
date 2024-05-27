@@ -111,6 +111,7 @@ target_compile_definitions(simavr PRIVATE
 if (APPLE)
 	target_include_directories(simavr PRIVATE
 		"/usr/local/include/"
+		"/opt/homebrew/include/"
 	)
 endif()
 
